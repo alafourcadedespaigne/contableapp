@@ -9,7 +9,7 @@ export class User {
 
     this.nombre = obj && obj.nombre || null;
     this.email = obj && obj.email || null;
-    this.uid = obj && obj.ui || null;
+    this.uid = obj && obj.uid || null;
 
   }
 
@@ -17,7 +17,7 @@ export class User {
 
 
 interface DataObj {
-  ui: string;
+  uid: string;
   email: string;
   nombre: string;
 }

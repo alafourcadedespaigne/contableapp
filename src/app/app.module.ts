@@ -1,36 +1,37 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+
+// Modulos
+
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+
+// NGRX
+import {StoreModule} from '@ngrx/store';
+import {StoreDevtoolsModule} from '@ngrx/store-devtools';
+import {appReducers} from './app.reducer';
 
 // Firebase
 import {AngularFireModule} from 'angularfire2';
 import {AngularFirestoreModule} from 'angularfire2/firestore';
 import {AngularFireAuthModule} from 'angularfire2/auth';
 
-// Modules
-import {AppRouting} from './app.routing';
-import {FormsModule} from '@angular/forms';
 
-// enviroment
+// Environment
 import {environment} from '../environments/environment';
 
-// ngrx
-import { StoreModule } from '@ngrx/store';
-import {appReducers} from './app.reducer';
-import {StoreDevtoolsModule} from '@ngrx/store-devtools';
-
-
-import { AppComponent } from './app.component';
-import { LoginComponent } from './auth/login/login.component';
-import { RegisterComponent } from './auth/register/register.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { IngresoEgresoComponent } from './ingreso-egreso/ingreso-egreso.component';
-import { EstadisticaComponent } from './ingreso-egreso/estadistica/estadistica.component';
-import { DetalleComponent } from './ingreso-egreso/detalle/detalle.component';
-import { FooterComponent } from './shared/footer/footer.component';
-import { NavbarComponent } from './shared/navbar/navbar.component';
-import { SidebarComponent } from './shared/sidebar/sidebar.component';
-
-
+import {AppComponent} from './app.component';
+import {LoginComponent} from './auth/login/login.component';
+import {RegisterComponent} from './auth/register/register.component';
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {IngresoEgresoComponent} from './ingreso-egreso/ingreso-egreso.component';
+import {EstadisticaComponent} from './ingreso-egreso/estadistica/estadistica.component';
+import {DetalleComponent} from './ingreso-egreso/detalle/detalle.component';
+import {FooterComponent} from './shared/footer/footer.component';
+import {NavbarComponent} from './shared/navbar/navbar.component';
+import {SidebarComponent} from './shared/sidebar/sidebar.component';
+import {AppRouting} from './app.routing';
+import { OrdenIngresoEgresoPipe } from './ingreso-egreso/orden-ingreso-egreso.pipe';
+import {ChartsModule} from 'ng2-charts';
 
 
 @NgModule({
@@ -44,15 +45,18 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
     DetalleComponent,
     FooterComponent,
     NavbarComponent,
-    SidebarComponent
+    SidebarComponent,
+    OrdenIngresoEgresoPipe,
   ],
   imports: [
     BrowserModule,
     AppRouting,
     FormsModule,
+    ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
+    ChartsModule,
     StoreModule.forRoot(appReducers),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
@@ -62,4 +66,5 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

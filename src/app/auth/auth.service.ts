@@ -11,7 +11,7 @@ import {AngularFirestore} from 'angularfire2/firestore';
 import {Store} from '@ngrx/store';
 import {AppState} from '../app.reducer';
 import {ActivarLoadingAction, DesactivarLoadingAction} from '../shared/ui.accions';
-import {SetUserAction} from './auth.actions';
+import {SetUserAction, UnsetUserAction} from './auth.actions';
 import {Subscription} from 'rxjs';
 
 @Injectable({
@@ -20,6 +20,7 @@ import {Subscription} from 'rxjs';
 export class AuthService {
 
   private userSubscription: Subscription = new Subscription();
+  private usuario: User;
 
   constructor(private afAuth: AngularFireAuth,
               private router: Router, private afDB: AngularFirestore, private store: Store<AppState>) {
@@ -27,16 +28,24 @@ export class AuthService {
 
   initAuthListener() {
 
-    this.userSubscription = this.afAuth.authState.subscribe((fbUser: firebase.User) => {
+    this.afAuth.authState.subscribe((fbUser: firebase.User) => {
 
       if (fbUser) {
-        this.afDB.doc(`${ fbUser.uid }/usuario`).valueChanges()
+
+        this.userSubscription = this.afDB.doc(`${ fbUser.uid }/usuario`).valueChanges()
           .subscribe((usuarioObj: any) => {
+
             const newUser = new User(usuarioObj);
             this.store.dispatch(new SetUserAction(newUser));
+            this.usuario = newUser;
+
           });
+
       } else {
+
+        this.usuario = null;
         this.userSubscription.unsubscribe();
+
       }
 
     });
@@ -46,33 +55,36 @@ export class AuthService {
 
   crearUsuario(nombre: string, email: string, password: string) {
 
-
     this.store.dispatch(new ActivarLoadingAction());
 
-    this.afAuth.auth.createUserWithEmailAndPassword(email, password)
-      .then(respuesta => {
+    this.afAuth.auth
+      .createUserWithEmailAndPassword(email, password)
+      .then(resp => {
 
-        // Crear usuario en Firebase
-
+        // console.log(resp);
         const user: User = {
-          uid: respuesta.user.uid,
+          uid: resp.user.uid,
           nombre: nombre,
-          email: respuesta.user.email
+          email: resp.user.email
         };
 
         this.afDB.doc(`${ user.uid }/usuario`)
           .set(user)
           .then(() => {
+
             this.router.navigate(['/']);
             this.store.dispatch(new DesactivarLoadingAction());
+
           });
 
 
       })
       .catch(error => {
         console.error(error);
+        this.store.dispatch(new DesactivarLoadingAction());
         Swal('Error en el login', error.message, 'error');
       });
+
 
   }
 
@@ -96,8 +108,12 @@ export class AuthService {
 
 
   logout() {
+
     this.router.navigate(['/login']);
     this.afAuth.auth.signOut();
+
+    this.store.dispatch(new UnsetUserAction());
+
   }
 
   isAuth() {
@@ -112,6 +128,10 @@ export class AuthService {
         return fbuser != null;
       })
     );
+  }
+
+  getUsuario() {
+    return {...this.usuario};
   }
 
 }
