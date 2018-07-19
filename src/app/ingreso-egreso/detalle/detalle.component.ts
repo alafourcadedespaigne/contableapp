@@ -5,6 +5,7 @@ import {Subscription} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../app.reducer';
 import {IngresoEgresoService} from '../ingreso-egreso.service';
+import {IAppState} from '../ingreso-egreso.reducer';
 
 @Component({
   selector: 'app-detalle',
@@ -16,7 +17,7 @@ export class DetalleComponent implements OnInit, OnDestroy {
   items: IngresoEgreso[];
   subscription: Subscription = new Subscription();
 
-  constructor(private store: Store<AppState>,
+  constructor(private store: Store<IAppState>,
               public ingresoEgresoService: IngresoEgresoService) {
   }
 
